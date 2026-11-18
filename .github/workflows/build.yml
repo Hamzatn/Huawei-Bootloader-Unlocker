@@ -14,17 +14,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Uncomment if your project uses .NET / C#
       - name: Setup .NET SDK
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
 
+      # Specify the relative path to your .csproj or .sln file here
       - name: Restore dependencies
-        run: dotnet restore
+        run: dotnet restore "Path/To/YourProject.csproj"
 
       - name: Build application
-        run: dotnet build --configuration Release --no-restore
+        run: dotnet build "Path/To/YourProject.csproj" --configuration Release --no-restore
 
       - name: Upload binary artifacts
         uses: actions/upload-artifact@v4
