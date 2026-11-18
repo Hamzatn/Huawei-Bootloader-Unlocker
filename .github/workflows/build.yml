@@ -7,7 +7,7 @@ on:
     branches: [ "main", "master" ]
 
 jobs:
-  build:
+_build:
     runs-on: windows-latest
 
     steps:
@@ -19,12 +19,18 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
-      # Specify the relative path to your .csproj or .sln file here
-      - name: Restore dependencies
-        run: dotnet restore "Path/To/YourProject.csproj"
-
-      - name: Build application
-        run: dotnet build "Path/To/YourProject.csproj" --configuration Release --no-restore
+      - name: Find, restore, and build project
+        shell: pwsh
+        run: |
+          $csproj = Get-ChildItem -Recurse -Filter *.csproj | Select-Object -First 1
+          if ($csproj) {
+            Write-Host "Found project file: $($csproj.FullName)"
+            dotnet restore $csproj.FullName
+            dotnet build $csproj.FullName --configuration Release --no-restore
+          } else {
+            Write-Error "No .csproj file found in the repository."
+            exit 1
+          }
 
       - name: Upload binary artifacts
         uses: actions/upload-artifact@v4
