@@ -23,8 +23,8 @@ jobs:
           $cFile = Get-ChildItem -Recurse -Filter *.c | Select-Object -First 1
           if ($cFile) {
             Write-Host "Found C file: $($cFile.FullName)"
-            # Compile using MSVC compiler (cl.exe) with optimization flag /O2
-            cl.exe /O2 $cFile.FullName /Fe:HuaweiUnlocker.exe
+            # Compile with optimization and link legacy_stdio_definitions.lib for sprintf
+            cl.exe /O2 $cFile.FullName /Fe:HuaweiUnlocker.exe legacy_stdio_definitions.lib
           } else {
             Write-Error "No .c file found in the repository."
             exit 1
