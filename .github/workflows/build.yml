@@ -14,21 +14,19 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup .NET SDK
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '8.0.x'
+      - name: Set up MSVC Developer Command Prompt
+        uses: ilammy/msvc-dev-cmd@v1
 
-      - name: Find, restore, and build project
+      - name: Find and compile C source file
         shell: pwsh
         run: |
-          $csproj = Get-ChildItem -Recurse -Filter *.csproj | Select-Object -First 1
-          if ($csproj) {
-            Write-Host "Found project file: $($csproj.FullName)"
-            dotnet restore $csproj.FullName
-            dotnet build $csproj.FullName --configuration Release --no-restore
+          $cFile = Get-ChildItem -Recurse -Filter *.c | Select-Object -First 1
+          if ($cFile) {
+            Write-Host "Found C file: $($cFile.FullName)"
+            # Compile using MSVC compiler (cl.exe) with optimization flag /O2
+            cl.exe /O2 $cFile.FullName /Fe:HuaweiUnlocker.exe
           } else {
-            Write-Error "No .csproj file found in the repository."
+            Write-Error "No .c file found in the repository."
             exit 1
           }
 
@@ -36,4 +34,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Huawei-Bootloader-Unlocker-Release
-          path: '**/bin/Release/**'
+          path: HuaweiUnlocker.exe
